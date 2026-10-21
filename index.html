@@ -45,5 +45,25 @@ nav a:hover,nav a:focus-visible{background:var(--nav-hover);outline:none}
 (function(){var ss=document.querySelectorAll('.s');if(!('IntersectionObserver' in window)){ss.forEach(function(e){e.classList.add('in')});}else{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -12% 0px',threshold:0});ss.forEach(function(e){io.observe(e)});}})();
 (function(){var n=document.getElementById('nav'),y=window.scrollY;
 window.addEventListener('scroll',function(){var c=window.scrollY;if(c>y&&c>200)n.classList.add('hide');else n.classList.remove('hide');y=c;},{passive:true});})();
+
+(function(){
+  // Auto-update: compare the page ETag on Vercel; reload when a new version is deployed.
+  if(!/^https?:$/.test(location.protocol))return;
+  var KEY='ab-scroll',url=location.origin+location.pathname,etag=null,banner=null;
+  try{var sv=sessionStorage.getItem(KEY);if(sv!==null){sessionStorage.removeItem(KEY);var r=parseFloat(sv);addEventListener('load',function(){scrollTo(0,r*document.documentElement.scrollHeight);});}}catch(e){}
+  function head(){return fetch(url,{method:'HEAD',cache:'no-store'}).then(function(r){return r.ok?(r.headers.get('etag')||r.headers.get('last-modified')):null;}).catch(function(){return null;});}
+  function reload(){try{sessionStorage.setItem(KEY,String(scrollY/document.documentElement.scrollHeight));}catch(e){}location.reload();}
+  function showBanner(){
+    if(banner)return;banner=document.createElement('button');banner.type='button';
+    banner.textContent='New version available · Reload';
+    banner.setAttribute('style','position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);z-index:20;border:0;cursor:pointer;padding:12px 20px;border-radius:999px;background:rgba(20,10,30,.78);color:#fff;font:500 13px/1 Montserrat,system-ui,sans-serif;letter-spacing:.04em;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 6px 24px rgba(0,0,0,.25)');
+    banner.onclick=reload;document.body.appendChild(banner);
+  }
+  function check(auto){head().then(function(t){if(!t)return;if(etag===null){etag=t;return;}if(t!==etag){if(auto||document.hidden)reload();else showBanner();}});}
+  check();
+  setInterval(function(){if(!document.hidden)check(false);},120000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){if(banner){reload();return;}check(true);}});
+  addEventListener('pageshow',function(e){if(e.persisted)check(true);});
+})();
 </script>
 </body></html>
